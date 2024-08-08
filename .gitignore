@@ -1,1 +1,4 @@
 inbox.md
+bin/
+obj/
+.idea/

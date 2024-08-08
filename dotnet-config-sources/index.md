@@ -12,6 +12,60 @@ status: Draft
 
 ![](thumb.png)
 
+## Database and AppSettings
+
+Let's say we are developing and ASP .NET application. We've just scaffolded it via `dotnet new web`. Now we want to connect it to a database, so we need to put our connection string somewhere. Obviously, we can't put it straight in code, as we'll have different databases in development and production. At the same time, a brief look at the folder structure hints that `appsettings.json` and `appsettings.Development.json` can easily handle the use case. Indeed, if we'll add in `appsettings.json`
+
+```jsonc
+{
+    "ConnectionStrings": {
+        "Db" : "ProductionDbConnectionString"
+    },
+    // 
+}
+```
+
+and in `appsettings.Development.json`:
+
+```jsonc
+{
+    "ConnectionStrings": {
+        "Db" : "DevelopmentDbConnectionString"
+    },
+    // 
+}
+```
+
+and then use that connection string:
+
+```csharp
+var dbConnectionString = app.Configuration.GetConnectionString("Db");
+app.Logger.LogInformation("Db Connection string: {dbConnectionString}", dbConnectionString);
+```
+
+We'll be able to get the different connection strings depending on the environment we run in:
+
+```sh
+dotnet run --environment=Development # logs `Db Connection string: DevelopmentDbConnectionString`
+```
+
+```sh
+dotnet run --environment=Production # logs `Db Connection string: ProductionDbConnectionString`
+```
+
+However, there are a few problems with this approach:
+
+1. It's not secure to store connection strings in the code, since any developer will have an easy access to the production database password.
+2. It's entirely possible that there will be a ton of environments. In fact, in my practice I've seen repositories having `appsettings.Local.json`, `appsettings.Development.json`, `appsettings.Local.json`, `appsettings.QA1.json`, `appsettings.QA2.json`, `appsettings.Staging.json`, `appsettings.json` files in every single project. Of course, that resulted in a lot of duplications and general maintenance mess.
+3. Since `appsetting.json` serves as both production and default configuration source, forgetting to override something may result in connecting and potentially modifying something on production during debugging.
+4. Blurs the list of configuration values that need to be specified when configuring a new environment. Sometimes resulting in false-positive configuration as in point #3.
+
+## Environment Variables for Connectivity
+
+## Onboard Developers with LaunchSettings
+
+## Do we need AppSettings then?
+
 ## TLDR;
 
 Wrapping it up, let's summarize the decision made in this article. There are essentially two solutions, for two configuration value purposes: Connectivity and Behaviour.
