@@ -2,9 +2,9 @@
 status: Draft
 ---
 
-# .NET Configuration Architecture
+# .NET Configuration Architecture: Getting Started
 
-> Juggling AppSettings, Environment Variables, and Co.
+> Juggling AppSettings, Environment Variables, and ...
 
 .NET apps nowadays come out of the box with a robust set of configuration sources. A newly scaffolded ASP .NET app reads configuration from JSON files (`appsettings.json`), environment variables, and command-line arguments. Despite this and partially because of it, maintaining a clean configuration architecture becomes a challenge. Let's walk through some commonly arising architectural puzzles and try to find a solution for them.
 
@@ -14,7 +14,7 @@ status: Draft
 
 ## Database and AppSettings
 
-Let's say we are developing an ASP .NET application. We've just scaffolded it via `dotnet new web`. Now we want to connect it to a database, so we need to put our connection string somewhere. Obviously, we can't put it straight in code, as we'll have different databases in development and production. At the same time, a brief look at the folder structure hints that `appsettings.json` and `appsettings.Development.json` can easily handle the use case. Indeed, if we'll add in `appsettings.json`
+Let's say we are developing an ASP .NET application. We've just scaffolded it via `dotnet new web --name Confitecture`. Now we want to connect it to a database, so we need to put our connection string somewhere. Obviously, we can't put it straight in code, as we'll have different databases in development and production. At the same time, a brief look at the folder structure hints that `appsettings.json` and `appsettings.Development.json` can easily handle the use case. Indeed, if we'll add in `appsettings.json`
 
 ```jsonc
 {
@@ -60,25 +60,118 @@ However, there are a few problems with this approach:
 3. Since `appsetting.json` serves as both production and default configuration source, forgetting to override something may result in connecting and potentially modifying something on production during debugging.
 4. Blurs the list of configuration values that need to be specified when configuring a new environment. Sometimes resulting in false-positive configuration as in point #3.
 
+So, how about we find something better?
+
 ## Environment Variables for Connectivity
+
+Well, we have two great fantastic configuration sources left: Environment Variable and Command Line arguments. In a sense, they provide very similar experience: they are externilized and are natively supported by virtually every CI system. Probably the main argument for environment variables is that they provide an easier maintenance, when their number grows. Let's prototype how Environment Variable will be used in our app.
+
+To "keep it real" let's now actually use our connection string to connect to a database.
+First let's add EF Core with postgres:
+
+```sh
+dotnet add package Npgsql.EntityFrameworkCore.PostgreSQL
+```
+
+And update our `Program.cs` to connect to the database:
+
+```csharp
+using Microsoft.EntityFrameworkCore;
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddDbContext<DbContext>(
+    o => o.UseNpgsql(builder.Configuration.GetConnectionString("Db"))
+);
+
+var app = builder.Build();
+
+app.MapGet("/", async (DbContext context) => {
+    await context.Database.OpenConnectionAsync();
+    return "Connected!";
+});
+
+app.Run();
+```
+
+Perhaps, the first thing a nice repository must do is provide a way to deploy it locally. In our cases it would imply providing a simple way to deploy PostgreSQL database with our App connected to it. Nowadays, docker compose is the most popular and simple way to achieve that. First we'll need a `Dockerfile` near the project folder:
+
+```Dockerfile
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+EXPOSE 8080
+WORKDIR /app
+
+COPY . .
+RUN dotnet publish "Confitecture.csproj" -c Release -o /app/publish
+
+WORKDIR /app/publish
+ENTRYPOINT dotnet Confitecture.dll
+```
+
+And then the `compose.yml`:
+
+```yml
+name: confitecture
+
+services:
+  app:
+    image: confitecture
+    ports:
+      - "53593:8080"
+    build: .
+    environment:
+      - CONNECTIONSTRINGS__DB=Host=db;Port=5432;Username=postgres;Password=postgres
+      - ASPNETCORE_ENVIRONMENT=Development
+  db:
+    image: postgres
+    environment:
+      - POSTGRES_PASSWORD=postgres
+```
+
+With the setup if we'll deploy out service, wait for one second and call our endpoint:
+
+```sh
+docker compose up -d && sleep 1 && curl localhost:53593
+```
+
+We'll get the `Connected!` response! Notice the `- CONNECTIONSTRINGS__DB=Host=db;Port=5432;Username=postgres;Password=postgres`. That's how we propogated environment variables from docker to the .NET app. 
+
+> 💪 The cool thing about it is that we don't leak any docker-specific detail (like the internal network dns name `db`).
 
 ## Onboard Developers with LaunchSettings
 
-## Do we need AppSettings then?
+One things we've lost when we moved from AppSettings to Environment Variables is the ability of a developer to Run the app for Debug, by just `dotnet run`. Let's get this back! First thing we need to do is to provide developer a simple way to deploy just the infrastructure services. This can be achieved by docker compose [Service Profiles](https://docs.docker.com/compose/profiles/). If we'll add profile `full` to the app service, like this:
 
-## TLDR;
+```yaml
+name: confitecture
 
-Wrapping it up, let's summarize the decision made in this article. There are essentially two solutions for two configuration value purposes: Connectivity and Behaviour.
+services:
+  app:
+    # ...
+    profiles: [ "full" ]
+      
+  db:
+    # ...
+```
 
-### Connectivity
+The `app` service will be run only if profile is specified in the docker compose command. And profileless `db` will be run all the time. Let's check it by first killing all the services:
 
-Connectivity configuration is your db connection strings, external and internal services urls, and everything else helping you connect to other applications. There could be a ton of various connectivity configurations for a single base service. Environment variables are a good place for those configuration values. For the local debugging put your `localhost:1111` in environment variables in `launchSettings`, and for local deployment using docker put the internal `service-a` in service environment variables using `docker-compose.yml`. In production, there are numerous CI systems supplying environment variables to your app, specifying a particular one is out of the scope of this article.
+```sh
+docker compose --profile full down
+```
 
-### Behaviour
+And then starting just the `db` service.
 
-Behaviour configuration refers to a configuration of things like logging and exception handling. Most of the time, app behaviour could be split into just two scenarios: Development and Production. The `appsettings.Development.json` file is a perfect source for the first case, and `appsettings.json` is perfect for the second. 
+```sh
+docker compose up -d
+```
 
-In rare cases, you may want to introduce `appsettings.Staging.json` or override some particular config from your CI system.
+The main argument for using `environmentVariables` over `commandLineArgs` (which `launchSettings` also provide) is, in my taste, that environment variables have a few peculiarities. You may already notice the double underscore (`__`) in the variable name in the docker compose. So `launchSettings` provide the quickest way to catch possible configuration errors.
 
-And that's about it!
+> 📚 I talk about the environment variable nuances in depth in the dedicated [article](https://medium.com/p/d6b4ea6cff9f).
 
+> ☝🏼 In most of the cases, you'll probably start from the `launchSettings` instead of the docker files. When you'll get the `launchSettings` profile working it will also identify which environment variables you'll have to specify in the docker-compose file.
+
+## What's Next?
+
+If `appsettings.json` bears so many problems and we have a valid alternative to it, is it even needed? It is! I'll describe why in the next article. For now, you can check out the example source code on the [github]().

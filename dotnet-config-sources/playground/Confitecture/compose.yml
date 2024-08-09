@@ -1,0 +1,17 @@
+name: confitecture
+
+services:
+  app:
+    image: confitecture
+    ports:
+      - "53593:8080"
+    build: .
+    profiles: [ "full" ]
+    environment:
+      - CONNECTIONSTRINGS__DB=Host=db;Port=5432;Username=postgres;Password=postgres
+      - ASPNETCORE_ENVIRONMENT=Development
+      
+  db:
+    image: postgres
+    environment:
+      - POSTGRES_PASSWORD=postgres
