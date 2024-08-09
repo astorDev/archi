@@ -6,9 +6,7 @@ status: Complete
 
 > Juggling AppSettings, Environment Variables, and ...
 
-.NET apps nowadays come out of the box with a robust set of configuration sources. A newly scaffolded ASP .NET app reads configuration from JSON files (`appsettings.json`), environment variables, and command-line arguments. Despite this and partially because of it, maintaining a clean configuration architecture becomes a challenge. Let's walk through some commonly arising architectural puzzles and try to find a solution for them.
-
-> 🤷 Or jump straight to the [TLDR](#tldr) to find out the decisions made.
+.NET apps nowadays come out of the box with a robust set of configuration sources. A newly scaffolded ASP .NET app reads configuration from JSON files (`appsettings.json`), environment variables, and command-line arguments. Despite this and partially because of it, maintaining a clean configuration architecture becomes a challenge. Let's walk through one particularly common architectural puzzle and try to find a solution for it.
 
 ![](thumb.png)
 
