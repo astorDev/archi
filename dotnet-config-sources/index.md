@@ -188,13 +188,12 @@ With the PostgreSQL now deployed on the `localhost`, all we need to do is to fin
 }
 ```
 
-A developer will be able to just send `dotnet run` command (which will use the only existing launch profile) to get up and running with our application.
+A developer will be able to just send `dotnet run` command (which will use the only existing launch profile) to get up and running with our application. In most cases, you'll probably start development from the `launchSettings` instead of the docker files. When you'll get the `launchSettings` profile working it will also identify which environment variables you'll have to specify in the docker-compose file.
 
-> 📚 The main argument for using `environmentVariables` over `commandLineArgs` (which `launchSettings` also provides) is, in my taste, that environment variables have a few peculiarities. You may already notice the double underscore (`__`) in the variable name in the docker compose. So `launchSettings` provides the quickest way to catch possible configuration errors.
+> ☝️ The main argument for using `environmentVariables` over `commandLineArgs` (which `launchSettings` also provides) is, in my taste, that environment variables have a few peculiarities. You may already notice the double underscore (`__`) in the variable name in the docker compose. So `launchSettings` provides the quickest way to catch possible configuration errors.
 
-> I talk about the environment variable nuances in depth in the dedicated [article](https://medium.com/p/d6b4ea6cff9f).
+> 📚 I talk about the environment variable nuances in depth in the dedicated [article](https://medium.com/p/d6b4ea6cff9f).
 
-> ☝🏼 In most cases, you'll probably start from the `launchSettings` instead of the docker files. When you'll get the `launchSettings` profile working it will also identify which environment variables you'll have to specify in the docker-compose file.
 
 ## What's Next?
 
