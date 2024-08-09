@@ -12,7 +12,7 @@ status: Complete
 
 ## Database and AppSettings
 
-Let's say we are developing an ASP .NET application. We've just scaffolded it via `dotnet new web --name Confitecture`. Now we want to connect it to a database, so we need to put our connection string somewhere. Obviously, we can't put it straight in code, as we'll have different databases in development and production. At the same time, a brief look at the folder structure hints that `appsettings.json` and `appsettings.Development.json` can easily handle the use case. Indeed, if we'll add in `appsettings.json`
+Let's say we are developing an ASP .NET application. We've just scaffolded it via `dotnet new web --name Confitecture`. Now we want to connect it to a database, so we need to put our connection string somewhere. Obviously, we can't put it straight in code, as we'll have different databases in development and production. A brief look at the folder structure hints that `appsettings.json` and `appsettings.Development.json` can easily handle the use case. Indeed, if we'll add in `appsettings.json`
 
 ```jsonc
 {
