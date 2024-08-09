@@ -10,8 +10,10 @@ services:
     environment:
       - CONNECTIONSTRINGS__DB=Host=db;Port=5432;Username=postgres;Password=postgres
       - ASPNETCORE_ENVIRONMENT=Development
-      
+
   db:
     image: postgres
     environment:
       - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432"

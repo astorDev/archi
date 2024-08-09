@@ -117,13 +117,17 @@ services:
     ports:
       - "53593:8080"
     build: .
+    profiles: [ "full" ]
     environment:
       - CONNECTIONSTRINGS__DB=Host=db;Port=5432;Username=postgres;Password=postgres
       - ASPNETCORE_ENVIRONMENT=Development
+
   db:
     image: postgres
     environment:
       - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432"
 ```
 
 With the setup if we'll deploy our service, wait for one second and call our endpoint:
@@ -163,6 +167,28 @@ And then starting just the `db` service.
 ```sh
 docker compose up -d
 ```
+
+With the PostgreSQL now deployed on the `localhost`. All we need to do is to find a place where we can place the `localhost` connection so that it is used only when a developer runs the app locally e.g. for debugging. `launchSettings.json` serves exactly this purpose. So, if we'll update the content of the file to:
+
+```json
+{
+  "$schema": "http://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "Local": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "applicationUrl": "http://localhost:53593",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "CONNECTIONSTRINGS__DB": "Host=localhost;Port=5432;Username=postgres;Password=postgres"
+      },
+    }
+  }
+}
+```
+
+A developer will be able to just send `dotnet run` command (which will use the only existing launchProfile) to get up and running with our application.
 
 The main argument for using `environmentVariables` over `commandLineArgs` (which `launchSettings` also provides) is, in my taste, that environment variables have a few peculiarities. You may already notice the double underscore (`__`) in the variable name in the docker compose. So `launchSettings` provides the quickest way to catch possible configuration errors.
 
