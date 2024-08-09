@@ -136,11 +136,11 @@ docker compose up -d && sleep 1 && curl localhost:53593
 
 We'll get the `Connected!` response! Notice the `- CONNECTIONSTRINGS__DB=Host=db;Port=5432;Username=postgres;Password=postgres`. That's how we propagated environment variables from docker to the .NET app. 
 
-> 💪 The cool thing about it is that we don't leak any docker-specific detail (like the internal network dns name `db`).
+> 💪 The cool thing about it is that we don't leak any docker-specific detail (like the internal network DNS name `db`).
 
 ## Onboard Developers with LaunchSettings
 
-One thing we've lost when we moved from AppSettings to Environment Variables is the ability of a developer to Run the app for Debug, by just `dotnet run`. Let's get this back! First thing we need to do is to provide developers with a simple way to deploy just the infrastructure services. This can be achieved by docker compose [Service Profiles](https://docs.docker.com/compose/profiles/). If we add profile `full` to the app service, like this:
+One thing we've lost when we moved from AppSettings to Environment Variables is the ability of a developer to Run the app for Debug, by just `dotnet run`. Let's get this back! The first thing we need to do is to provide developers with a simple way to deploy just the infrastructure services. This can be achieved by docker compose [Service Profiles](https://docs.docker.com/compose/profiles/). If we add profile `full` to the app service, like this:
 
 ```yaml
 name: confitecture
@@ -174,4 +174,4 @@ The main argument for using `environmentVariables` over `commandLineArgs` (which
 
 ## What's Next?
 
-If `appsettings.json` bears so many problems and we have a valid alternative to it, is it even needed? It is! I'll describe why in the next article. For now, you can check out the example source code on the [github]().
+If `appsettings.json` bears so many problems and we have a valid alternative to it, is it even needed? It is! I'll describe why in the next article. For now, you can check out the example source code on the [github](https://github.com/astorDev/archi/tree/main/dotnet-config-sources/playground/Confitecture).
