@@ -62,7 +62,7 @@ So, how about we find something better?
 
 ## Environment Variables for Connectivity
 
-Well, we have two great fantastic configuration sources left: Environment Variable and Command Line arguments. In a sense, they provide very similar experiences: they are externalized and are natively supported by virtually every CI system. Probably the main argument for environment variables is that they provide easier maintenance when their number grows. Let's prototype how the Environment Variable will be used in our app.
+Well, we have two great configuration sources left: Environment Variable and Command Line arguments. In a sense, they both provide very similar experiences: they are externalized and are natively supported by virtually every CI system. Probably the main argument for environment variables is that they provide easier maintenance when their number grows. Let's prototype how the Environment Variable will be used in our app.
 
 To "keep it real" let's now actually use our connection string to connect to a database.
 First, let's add EF Core with Postgres:
@@ -92,7 +92,7 @@ app.MapGet("/", async (DbContext context) => {
 app.Run();
 ```
 
-Perhaps, the first thing a nice repository must do is provide a way to deploy it locally. In our case, it would imply providing a simple way to deploy the PostgreSQL database with our App connected to it. Nowadays, docker compose is the most popular and simple way to achieve that. First, we'll need a `Dockerfile` near the project folder:
+Perhaps, the first thing a nice repository must do is to provide a way to deploy it locally. In our case, it would imply providing a simple way to deploy the PostgreSQL database with our App connected to it. Nowadays, docker compose is the most popular and simple way to achieve that. First, we'll need a `Dockerfile`:
 
 ```Dockerfile
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
@@ -134,11 +134,11 @@ docker compose up -d && sleep 1 && curl localhost:53593
 
 We'll get the `Connected!` response! Notice the `- CONNECTIONSTRINGS__DB=Host=db;Port=5432;Username=postgres;Password=postgres`. That's how we propagated environment variables from docker to the .NET app. 
 
-> 💪 The cool thing about it is that we don't leak any docker-specific detail (like the internal network DNS name `db`).
+> 💪 The cool thing about it is that we don't leak any docker-specific detail (like the docker internal network domain name `db`).
 
 ## Onboard Developers with LaunchSettings
 
-One thing we've lost when we moved from AppSettings to Environment Variables is the ability of a developer to Run the app for Debug, by just `dotnet run`. Let's get this back! The first thing we need to do is to provide developers with a simple way to deploy just the infrastructure services. This can be achieved by docker compose [Service Profiles](https://docs.docker.com/compose/profiles/). If we add profile `full` to the app service, like this:
+One thing we've lost when we moved from AppSettings to Environment Variables is the ability of a developer to run the app for debugging, by just using `dotnet run`. Let's get this back! The first thing we need to do is to provide developers with a simple way to deploy just the infrastructure services. This can be achieved by docker compose [service profiles](https://docs.docker.com/compose/profiles/). If we add profile `full` to the app service, like this:
 
 ```yaml
 name: confitecture
