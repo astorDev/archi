@@ -64,10 +64,10 @@ So, how about we find something better?
 
 ## Environment Variables for Connectivity
 
-Well, we have two great fantastic configuration sources left: Environment Variable and Command Line arguments. In a sense, they provide very similar experience: they are externilized and are natively supported by virtually every CI system. Probably the main argument for environment variables is that they provide an easier maintenance, when their number grows. Let's prototype how Environment Variable will be used in our app.
+Well, we have two great fantastic configuration sources left: Environment Variable and Command Line arguments. In a sense, they provide very similar experiences: they are externalized and are natively supported by virtually every CI system. Probably the main argument for environment variables is that they provide easier maintenance when their number grows. Let's prototype how the Environment Variable will be used in our app.
 
 To "keep it real" let's now actually use our connection string to connect to a database.
-First let's add EF Core with postgres:
+First, let's add EF Core with Postgres:
 
 ```sh
 dotnet add package Npgsql.EntityFrameworkCore.PostgreSQL
@@ -94,7 +94,7 @@ app.MapGet("/", async (DbContext context) => {
 app.Run();
 ```
 
-Perhaps, the first thing a nice repository must do is provide a way to deploy it locally. In our cases it would imply providing a simple way to deploy PostgreSQL database with our App connected to it. Nowadays, docker compose is the most popular and simple way to achieve that. First we'll need a `Dockerfile` near the project folder:
+Perhaps, the first thing a nice repository must do is provide a way to deploy it locally. In our case, it would imply providing a simple way to deploy the PostgreSQL database with our App connected to it. Nowadays, docker compose is the most popular and simple way to achieve that. First, we'll need a `Dockerfile` near the project folder:
 
 ```Dockerfile
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
@@ -128,19 +128,19 @@ services:
       - POSTGRES_PASSWORD=postgres
 ```
 
-With the setup if we'll deploy out service, wait for one second and call our endpoint:
+With the setup if we'll deploy our service, wait for one second and call our endpoint:
 
 ```sh
 docker compose up -d && sleep 1 && curl localhost:53593
 ```
 
-We'll get the `Connected!` response! Notice the `- CONNECTIONSTRINGS__DB=Host=db;Port=5432;Username=postgres;Password=postgres`. That's how we propogated environment variables from docker to the .NET app. 
+We'll get the `Connected!` response! Notice the `- CONNECTIONSTRINGS__DB=Host=db;Port=5432;Username=postgres;Password=postgres`. That's how we propagated environment variables from docker to the .NET app. 
 
 > 💪 The cool thing about it is that we don't leak any docker-specific detail (like the internal network dns name `db`).
 
 ## Onboard Developers with LaunchSettings
 
-One things we've lost when we moved from AppSettings to Environment Variables is the ability of a developer to Run the app for Debug, by just `dotnet run`. Let's get this back! First thing we need to do is to provide developer a simple way to deploy just the infrastructure services. This can be achieved by docker compose [Service Profiles](https://docs.docker.com/compose/profiles/). If we'll add profile `full` to the app service, like this:
+One thing we've lost when we moved from AppSettings to Environment Variables is the ability of a developer to Run the app for Debug, by just `dotnet run`. Let's get this back! First thing we need to do is to provide developers with a simple way to deploy just the infrastructure services. This can be achieved by docker compose [Service Profiles](https://docs.docker.com/compose/profiles/). If we add profile `full` to the app service, like this:
 
 ```yaml
 name: confitecture
@@ -154,7 +154,7 @@ services:
     # ...
 ```
 
-The `app` service will be run only if profile is specified in the docker compose command. And profileless `db` will be run all the time. Let's check it by first killing all the services:
+The `app` service will be run only if the profile is specified in the docker compose command. And profile-less `db` will be run all the time. Let's check it by first killing all the services:
 
 ```sh
 docker compose --profile full down
@@ -166,11 +166,11 @@ And then starting just the `db` service.
 docker compose up -d
 ```
 
-The main argument for using `environmentVariables` over `commandLineArgs` (which `launchSettings` also provide) is, in my taste, that environment variables have a few peculiarities. You may already notice the double underscore (`__`) in the variable name in the docker compose. So `launchSettings` provide the quickest way to catch possible configuration errors.
+The main argument for using `environmentVariables` over `commandLineArgs` (which `launchSettings` also provides) is, in my taste, that environment variables have a few peculiarities. You may already notice the double underscore (`__`) in the variable name in the docker compose. So `launchSettings` provides the quickest way to catch possible configuration errors.
 
 > 📚 I talk about the environment variable nuances in depth in the dedicated [article](https://medium.com/p/d6b4ea6cff9f).
 
-> ☝🏼 In most of the cases, you'll probably start from the `launchSettings` instead of the docker files. When you'll get the `launchSettings` profile working it will also identify which environment variables you'll have to specify in the docker-compose file.
+> ☝🏼 In most cases, you'll probably start from the `launchSettings` instead of the docker files. When you'll get the `launchSettings` profile working it will also identify which environment variables you'll have to specify in the docker-compose file.
 
 ## What's Next?
 
