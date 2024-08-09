@@ -168,7 +168,7 @@ And then starting just the `db` service.
 docker compose up -d
 ```
 
-With the PostgreSQL now deployed on the `localhost`, all we need to do is to find a place where we can place the `localhost` connection so that it is used only when a developer runs the app locally e.g. for debugging. `launchSettings.json` serves exactly this purpose. So, if we'll update the content of the file to:
+With the PostgreSQL now deployed on the `localhost`, all we need to do is to find a place where we can place the `localhost` connection so that it is used only when a developer runs the app locally e.g. for debugging. `launchSettings.json` serves exactly this purpose. So, if we update the content of the file to:
 
 ```json
 {
