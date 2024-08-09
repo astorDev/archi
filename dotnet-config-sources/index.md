@@ -174,4 +174,4 @@ The main argument for using `environmentVariables` over `commandLineArgs` (which
 
 ## What's Next?
 
-If `appsettings.json` bears so many problems and we have a valid alternative to it, is it even needed? It is! I'll describe why in the next article. For now ... claps are appreciated! 👏
+If `appsettings.json` bears so many problems and we have a valid alternative to it, is it even needed? It is! I'll describe why in the next article. For now, you can check out the example source code on the [github]().
