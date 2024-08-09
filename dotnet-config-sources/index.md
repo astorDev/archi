@@ -1,5 +1,5 @@
 ---
-status: Draft
+status: Complete
 ---
 
 # .NET Configuration Architecture: Getting Started
