@@ -6,7 +6,7 @@ In the [previous article](https://medium.com/p/87526b9fbc68) we've started discu
 
 > We'll also summarize both article's discoveries in the [TLDR;](#tldr) in the end 😉
 
-> ☝️ This article discusses architectural use case of appsettings, not how the work. If you are want to figure out **how** to use them, leave a comment and I'll try to address it as soon as possible.
+> ☝️ This article discusses the architectural use case of appsettings, not how they work. If you want to figure out **how** to use them, leave a comment and I'll try to address it as soon as possible.
 
 ![](thumb.png)
 
@@ -32,7 +32,7 @@ As you may, see most of the configuration is dedicated to the application loggin
 
 ## Any More Examples?
 
-In the previous article, I've shared that in one company I've worked for we had a project structure resembling this
+In the previous article, I shared that in one company I worked for we had a project structure resembling this
 
 ```
 - ...
@@ -47,11 +47,11 @@ In the previous article, I've shared that in one company I've worked for we had 
     - 📄 appsettings.json
 ```
 
-in every project. As a consequence of the design decision we had to make a custom method `IHostEnvironment.IsDevelopmentLike` checking for `Local`, `Development`, and `QA`s. This is one of the scenario that can be easily avoided with architectural pattern introduced in the series of articles. Having a unified **behaviour** configurations will change that workaround to the good old `IsDevelopment` or even better just specify the behaviour in `appsettings.Development`.
+in every project. As a consequence of the design decision, we had to make a custom method `IHostEnvironment.IsDevelopmentLike` checking for `Local`, `Development`, and `QA`s. This is one of the scenarios that can be easily avoided with architectural patterns introduced in the series of articles. Having a unified **behaviour** configuration will change that workaround to the good old `IsDevelopment` or even better just specify the behaviour in `appsettings.Development`.
 
 Anyway, the interesting question is: in which cases the `IsDevelopmentLike` was used? (And where we can use just `appsettings.Development` instead). The most visible example I could recall was **Exception Handling**.
 
-We applied a special cautions to avoid displaying technical errors to a user in Production. However, in Dev or QA environments showing the full exception details significantly reduced speed we needed to figure out what went wrong. So setting up the **behaviour** for a group of environment would be much nicer than duplicating it accross bunch of `appsettings`.
+We applied special caution to avoid displaying technical errors to a user in Production. However, in Dev or QA environments showing the full exception details significantly reduced speed we needed to figure out what went wrong. So setting up the **behaviour** for a group of environments would be much nicer than duplicating it across a bunch of `appsettings`.
 
 ## TLDR;
 
