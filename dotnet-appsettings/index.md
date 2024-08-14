@@ -6,6 +6,8 @@ In the [previous article](https://medium.com/p/87526b9fbc68) we've started discu
 
 > We'll also summarize both article's discoveries in the [TLDR;](#tldr) in the end 😉
 
+> ☝️ This article discusses architectural use case of appsettings, not how the work. If you are want to figure out **how** to use them, leave a comment and I'll try to address it as soon as possible.
+
 ![](thumb.png)
 
 ## A Clue from Microsoft
@@ -29,6 +31,27 @@ As you may, see most of the configuration is dedicated to the application loggin
 **Connectivity** is another scenario for configuration, which we discussed with connection strings in the previous articles. Connection strings will most likely be different for local debug, development, and QA environments. That couldn't be said about logging, though. We will most likely be fine with a single configuration from `apppsettings.Development.json` for Dev and QA, so it's a pretty good idea to embed it into the project.
 
 ## Any More Examples?
+
+In the previous article, I've shared that in one company I've worked for we had a project structure resembling this
+
+```
+- ...
+- 📁 Domain
+- 📁 WebApi
+    - ...
+    - 📄 appsettings.Local.json
+    - 📄 appsettings.Development.json
+    - 📄 appsettings.QA1.json
+    - 📄 appsettings.QA2.json
+    - 📄 appsettings.Staging.json
+    - 📄 appsettings.json
+```
+
+in every project. As a consequence of the design decision we had to make a custom method `IHostEnvironment.IsDevelopmentLike` checking for `Local`, `Development`, and `QA`s. This is one of the scenario that can be easily avoided with architectural pattern introduced in the series of articles. Having a unified **behaviour** configurations will change that workaround to the good old `IsDevelopment` or even better just specify the behaviour in `appsettings.Development`.
+
+Anyway, the interesting question is: in which cases the `IsDevelopmentLike` was used? (And where we can use just `appsettings.Development` instead). The most visible example I could recall was **Exception Handling**.
+
+We applied a special cautions to avoid displaying technical errors to a user in Production. However, in Dev or QA environments showing the full exception details significantly reduced speed we needed to figure out what went wrong. So setting up the **behaviour** for a group of environment would be much nicer than duplicating it accross bunch of `appsettings`.
 
 ## TLDR;
 
