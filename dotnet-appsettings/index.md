@@ -2,9 +2,9 @@
 
 > Do we even need them?
 
-In the [previous article](https://medium.com/p/87526b9fbc68) we've started discussing different configuration sources present out of the box in .NET applications. We've found out a few pitfalls of storing configuration values like database connection strings in the `appsettings.*.json` files and figured out a better alternative: environment variables. As we were discovering the nice world of using environment variables for configuration a question arose: Where is the place for `apppsettings` then? Let's try to answer this now!
+In the [previous article](https://medium.com/p/87526b9fbc68) we've started discussing different configuration sources present out of the box in .NET applications. We've found a few pitfalls of storing configuration values like database connection strings in the `appsettings.*.json` files and figured out a better alternative: environment variables. As we discovered the nice world of using environment variables for configuration a question arose: Where is the place for `apppsettings` then? Let's try to answer this now!
 
-> We'll also summarize both articles discoveries in the [TLDR;](#tldr) in the end 😉
+> We'll also summarize both article's discoveries in the [TLDR;](#tldr) in the end 😉
 
 ## Story of `IsDevelopmentLike`
 
@@ -12,7 +12,7 @@ In the [previous article](https://medium.com/p/87526b9fbc68) we've started discu
 
 ## TLDR;
 
-During our journey in different configuration sources, we've discovered that's there is two primary solutions for two configuration purposes: Connectivity and Behaviour.
+During our journey in different configuration sources, we've discovered two primary configuration purposes: Connectivity and Behaviour.
 
 ### Connectivity
 
@@ -24,6 +24,6 @@ Behaviour configuration refers to a configuration of things like logging and exc
 
 --- 
 
-That's almost everything you need to know about architecting configuration sources in .NET. Don't forget to check the [first article](https://medium.com/p/87526b9fbc68) and also the in depth discussion of [Environment Variables](https://medium.com/me/stats/post/d6b4ea6cff9f). 
+That's almost everything you need to know about architecting configuration sources in .NET. Don't forget to check the [first article](https://medium.com/p/87526b9fbc68) and also the in-depth discussion of [Environment Variables](https://medium.com/me/stats/post/d6b4ea6cff9f). 
 
 And, as always ... Claps are appreciated! 👏
