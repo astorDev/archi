@@ -6,9 +6,29 @@ In the [previous article](https://medium.com/p/87526b9fbc68) we've started discu
 
 > We'll also summarize both article's discoveries in the [TLDR;](#tldr) in the end 😉
 
-## Story of `IsDevelopmentLike`
+![](thumb.png)
 
-## Do we need AppSettings then?
+## A Clue from Microsoft
+
+If we scaffold a new ASP .NET app via `dotnet new web`, here's what we will find in the `appsettings.json`:
+
+```json
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*"
+}
+```
+
+As you may, see most of the configuration is dedicated to the application logging. And here's the thing: we can easily imagine logging scope differing between the development environment and production, but it's much harder to imagine that we'll have logging behaviour differing for each environment. That's an example of an app **Behavior** configuration.
+
+**Connectivity** is another scenario for configuration, which we discussed with connection strings in the previous articles. Connection strings will most likely be different for local debug, development, and QA environments. That couldn't be said about logging, though. We will most likely be fine with a single configuration from `apppsettings.Development.json` for Dev and QA, so it's a pretty good idea to embed it into the project.
+
+## Any More Examples?
 
 ## TLDR;
 
