@@ -1,0 +1,13 @@
+services:
+  inner:
+    image: nginx
+    volumes:
+      - ./inner:/usr/share/nginx/html
+    ports:
+      - 4570:80
+  outer:
+    image: nginx
+    volumes:
+      - ./outer:/usr/share/nginx/html
+    ports:
+      - 4571:80

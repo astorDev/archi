@@ -2,3 +2,4 @@ inbox.md
 bin/
 obj/
 .idea/
+.DS_Store
